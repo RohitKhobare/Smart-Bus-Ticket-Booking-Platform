@@ -122,12 +122,15 @@ This project is licensed under the **MIT License**.
 ## 👨‍💻 Author
 
 Name: Rohit Manesh Khobare
-email: rohitkhobare2005@gmail.com
-contact: 9096809820
+Email: rohitkhobare2005@gmail.com
+Contact: 9096809820
+
+---
+
 **Rohit Khobare**
 
 * GitHub: https://github.com/RohitKhobare
 
 ---
 
-⭐ If you like this project, don’t forget to give it a star!
+⭐ If you like this project, don’t forget to give it a star! 
