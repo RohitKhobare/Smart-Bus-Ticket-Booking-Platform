@@ -8,7 +8,7 @@ const FACILITIES_KEY = "bus_facilities";
 
 // Initialize with sample data on first load
 const initializeData = () => {
-  const ROUTES_VERSION = "v2"; // Bump version when sample data changes
+  const ROUTES_VERSION = "v3"; // Bump version when sample data changes
   const storedVersion = localStorage.getItem("ROUTES_VERSION");
 
   // Reset cache if version changed (ensures latest sample data is used)

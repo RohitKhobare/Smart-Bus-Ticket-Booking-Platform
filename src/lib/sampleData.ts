@@ -1,7 +1,8 @@
 import { Route, Bus } from "./supabase";
 // pre-defined routes used when the Supabase client isn't configured or
 // the database has no data. Contains more than ten entries as requested.
-// Image is served from public folder
+// Image is served from public folder with base path
+const BASE_PATH = '/Smart-Bus-Ticket-Booking-Platform/';
 export const SAMPLE_ROUTES: Route[] = [
   {
     id: "sample-1",
@@ -10,7 +11,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "3h 15m",
     starting_price: 450,
     frequency: "Every 30 mins",
-    image_url: "/pune.jpeg",
+    image_url: BASE_PATH + "pune.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -20,7 +21,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "4h 0m",
     starting_price: 600,
     frequency: "Hourly",
-    image_url: "/agra.jpeg",
+    image_url: BASE_PATH + "agra.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -30,7 +31,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "6h 30m",
     starting_price: 800,
     frequency: "Daily",
-    image_url: "/bangalore.jpeg",
+    image_url: BASE_PATH + "bangalore.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -40,7 +41,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "12h 0m",
     starting_price: 1200,
     frequency: "Weekly",
-    image_url: "/darjeeling.jpeg",
+    image_url: BASE_PATH + "darjeeling.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -50,7 +51,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "4h 45m",
     starting_price: 550,
     frequency: "Every 2 hours",
-    image_url: "/vijayawada.jpeg",
+    image_url: BASE_PATH + "vijayawada.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -60,7 +61,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "3h 0m",
     starting_price: 400,
     frequency: "Daily",
-    image_url: "/rajkot.jpeg",
+    image_url: BASE_PATH + "rajkot.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -70,7 +71,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "5h 30m",
     starting_price: 700,
     frequency: "Daily",
-    image_url: "/udaipur.jpeg",
+    image_url: BASE_PATH + "udaipur.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -80,7 +81,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "2h 30m",
     starting_price: 350,
     frequency: "Every 90 mins",
-    image_url: "/vadodara.jpeg",
+    image_url: BASE_PATH + "vadodara.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -90,7 +91,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "6h 0m",
     starting_price: 650,
     frequency: "Daily",
-    image_url: "/varanasi.jpeg",
+    image_url: BASE_PATH + "varanasi.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -100,7 +101,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "10h 0m",
     starting_price: 1000,
     frequency: "Weekly",
-    image_url: "/goa.jpeg",
+    image_url: BASE_PATH + "goa.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -110,7 +111,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "8h 45m",
     starting_price: 900,
     frequency: "Daily",
-    image_url: "/manali.jpeg",
+    image_url: BASE_PATH + "manali.jpeg",
     created_at: new Date().toISOString(),
   },
   // Maharashtra routes
@@ -121,7 +122,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "3h 45m",
     starting_price: 500,
     frequency: "Every 30 mins",
-    image_url: "/nashik.jpeg",
+    image_url: BASE_PATH + "nashik.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -131,7 +132,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "5h 30m",
     starting_price: 650,
     frequency: "Hourly",
-    image_url: "/aurangabad.jpeg",
+    image_url: BASE_PATH + "aurangabad.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -141,7 +142,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "2h 45m",
     starting_price: 400,
     frequency: "Every 2 hours",
-    image_url: "/akola.jpeg",
+    image_url: BASE_PATH + "akola.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -151,7 +152,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "4h 0m",
     starting_price: 550,
     frequency: "Daily",
-    image_url: "/pune.jpeg",
+    image_url: BASE_PATH + "pune.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -161,7 +162,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "3h 30m",
     starting_price: 480,
     frequency: "Every 45 mins",
-    image_url: "/mumbai.jpeg",
+    image_url: BASE_PATH + "mumbai.jpeg",
     created_at: new Date().toISOString(),
   },
   {
@@ -171,7 +172,7 @@ export const SAMPLE_ROUTES: Route[] = [
     duration: "6h 0m",
     starting_price: 700,
     frequency: "Daily",
-    image_url: "/aurangabad.jpeg",
+    image_url: BASE_PATH + "aurangabad.jpeg",
     created_at: new Date().toISOString(),
   },
 ];

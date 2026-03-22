@@ -21,8 +21,9 @@ export default function AdminRoutes() {
     duration: "",
     starting_price: 0,
     frequency: "",
-    image_url: "",
   });
+
+  const ROUTES_KEY = "app_routes";
 
   useEffect(() => {
     if (!user || !isAdmin) {
@@ -33,7 +34,41 @@ export default function AdminRoutes() {
   }, [user, isAdmin, navigate]);
 
   const loadRoutes = () => {
-    setRoutes(dataService.getRoutes());
+    const allRoutes = dataService.getRoutes();
+    // Fix any routes that don't have image_url
+    const fixedRoutes = allRoutes.map(route => {
+      if (!route.image_url) {
+        return { ...route, image_url: getImageUrlForDestination(route.destination) };
+      }
+      return route;
+    });
+    // Update localStorage if any routes were fixed
+    if (fixedRoutes.some((r, i) => r.image_url !== allRoutes[i].image_url)) {
+      localStorage.setItem(ROUTES_KEY, JSON.stringify(fixedRoutes));
+    }
+    setRoutes(fixedRoutes);
+  };
+
+  const getImageUrlForDestination = (destination: string): string => {
+    const basePath = '/Smart-Bus-Ticket-Booking-Platform/';
+    const imageMap: { [key: string]: string } = {
+      'Pune': basePath + 'pune.jpeg',
+      'Agra': basePath + 'agra.jpeg',
+      'Bangalore': basePath + 'bangalore.jpeg',
+      'Darjeeling': basePath + 'darjeeling.jpeg',
+      'Goa': basePath + 'goa.jpeg',
+      'Manali': basePath + 'manali.jpeg',
+      'Mumbai': basePath + 'mumbai.jpeg',
+      'Nashik': basePath + 'nashik.jpeg',
+      'Rajkot': basePath + 'rajkot.jpeg',
+      'Udaipur': basePath + 'udaipur.jpeg',
+      'Vadodara': basePath + 'vadodara.jpeg',
+      'Varanasi': basePath + 'varanasi.jpeg',
+      'Vijayawada': basePath + 'vijayawada.jpeg',
+      'Aurangabad': basePath + 'aurangabad.jpeg',
+      'Akola': basePath + 'akola.jpeg',
+    };
+    return imageMap[destination] || basePath + 'mumbai.jpeg'; // Default to mumbai if not found
   };
 
   const handleSubmit = () => {
@@ -47,15 +82,20 @@ export default function AdminRoutes() {
       return;
     }
 
+    // Auto-set image_url based on destination
+    const imageUrl = getImageUrlForDestination(formData.destination);
+
     if (editing) {
       dataService.updateRoute(editing, {
         ...formData,
+        image_url: imageUrl,
         starting_price: Number(formData.starting_price),
       } as any);
     } else {
       dataService.addRoute({
         id: "route-" + Date.now(),
         ...formData,
+        image_url: imageUrl,
         starting_price: Number(formData.starting_price),
         created_at: new Date().toISOString(),
       } as any);
@@ -72,7 +112,6 @@ export default function AdminRoutes() {
       duration: route.duration,
       starting_price: route.starting_price,
       frequency: route.frequency,
-      image_url: route.image_url,
     });
     setEditing(route.id);
     setShowForm(true);
@@ -92,7 +131,6 @@ export default function AdminRoutes() {
       duration: "",
       starting_price: 0,
       frequency: "",
-      image_url: "",
     });
     setEditing(null);
     setShowForm(false);
@@ -173,14 +211,6 @@ export default function AdminRoutes() {
                   setFormData({ ...formData, frequency: e.target.value })
                 }
                 placeholder="e.g., Every 30 mins"
-              />
-              <Input
-                label="Image URL"
-                value={formData.image_url}
-                onChange={(e) =>
-                  setFormData({ ...formData, image_url: e.target.value })
-                }
-                placeholder="https://..."
               />
             </div>
             <div className="flex gap-4 mt-6">
