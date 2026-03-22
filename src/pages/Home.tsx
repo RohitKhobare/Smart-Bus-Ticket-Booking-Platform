@@ -1,34 +1,37 @@
-import { useEffect, useState } from 'react';
-import { MapPin, Calendar, Users, CreditCard, ArrowRight } from 'lucide-react';
-import RouteCard from '../components/RouteCard';
-import Button from '../components/Button';
-import { supabase, Route } from '../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { MapPin, Calendar, Users, CreditCard, ArrowRight } from "lucide-react";
+import RouteCard from "../components/RouteCard";
+import Button from "../components/Button";
+import { Route } from "../lib/supabase";
+import { useNavigate, useLocation } from "react-router-dom";
+import { dataService } from "../lib/dataService";
 
 export default function Home() {
   const [routes, setRoutes] = useState<Route[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [flashMessage, setFlashMessage] = useState("");
 
   useEffect(() => {
     fetchRoutes();
   }, []);
 
-  const fetchRoutes = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('routes')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setRoutes(data || []);
-    } catch (error) {
-      console.error('Error fetching routes:', error);
-    } finally {
-      setLoading(false);
+  // show message passed via navigation state and clear it
+  useEffect(() => {
+    if ((location.state as any)?.message) {
+      setFlashMessage((location.state as any).message);
+      navigate(location.pathname, { replace: true, state: {} });
     }
+  }, [location, navigate]);
+
+  const fetchRoutes = () => {
+    setLoading(true);
+    const r = dataService.getRoutes();
+    setRoutes(r);
+    setLoading(false);
   };
 
   const displayedRoutes = showAll ? routes : routes.slice(0, 6);
@@ -36,38 +39,43 @@ export default function Home() {
   const bookingSteps = [
     {
       icon: MapPin,
-      title: 'Select Your Route',
-      description: 'Choose from our extensive network of routes',
+      title: "Select Your Luxury Route",
+      description: "Browse our premium routes across India",
     },
     {
       icon: Calendar,
-      title: 'Pick Date & Time',
-      description: 'Select your preferred travel date and time',
+      title: "Pick Date & Time",
+      description: "Choose a convenient date and departure time",
     },
     {
       icon: Users,
-      title: 'Choose Your Seat',
-      description: 'Pick your favorite seat from available options',
+      title: "Choose Your Seat",
+      description: "Select from spacious, reclining premium seats",
     },
     {
       icon: CreditCard,
-      title: 'Secure Payment',
-      description: 'Complete booking with secure payment gateway',
+      title: "Secure Payment",
+      description: "Pay easily with our secure, encrypted checkout",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-16">
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
+          {flashMessage && (
+            <div className="mb-6 p-4 bg-green-100 text-green-800 rounded">
+              {flashMessage}
+            </div>
+          )}
           <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight leading-tight mb-4">
               <span className="text-gray-900">Popular </span>
               <span className="text-[#FF6B00]">Routes</span>
             </h1>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Discover our most traveled routes connecting major cities across the
-              country.
+              Discover our exclusive network of luxury routes spanning all of
+              India, crafted for the ultimate premium travel experience.
             </p>
           </div>
 
@@ -95,7 +103,7 @@ export default function Home() {
                     size="lg"
                     onClick={() => setShowAll(!showAll)}
                   >
-                    {showAll ? 'Show Less' : 'View All Routes'}
+                    {showAll ? "Show Less" : "View All Routes"}
                   </Button>
                 </div>
               )}
@@ -107,13 +115,13 @@ export default function Home() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-              <span className="text-gray-900">Simple </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight mb-4">
+              <span className="text-gray-900">Premium </span>
               <span className="text-[#FF6B00]">Booking Process</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Book your bus tickets in just 4 easy steps. Quick, secure, and
-              hassle-free.
+              Book your bus tickets in just 4 easy steps. Effortless, secure,
+              and indulgent.
             </p>
           </div>
 
@@ -142,7 +150,17 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg" onClick={() => navigate('/')}>
+            <Button
+              size="lg"
+              onClick={() => {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const dateStr = tomorrow.toISOString().split("T")[0];
+                navigate(
+                  `/s-to-d?origin=Mumbai&destination=Pune&date=${dateStr}`,
+                );
+              }}
+            >
               Start Booking Now
               <ArrowRight className="w-5 h-5 ml-2 inline" />
             </Button>

@@ -1,23 +1,78 @@
-import { useState } from 'react';
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { useState } from "react";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Send,
+  CheckCircle,
+} from "lucide-react";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
+    name: "",
+    email: "",
+    message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const sendEmail = async () => {
+    try {
+      // Store message in localStorage
+      const messages = JSON.parse(
+        localStorage.getItem("contact_messages") || "[]",
+      );
+      messages.push({
+        ...formData,
+        timestamp: new Date().toISOString(),
+        id: "msg-" + Date.now(),
+      });
+      localStorage.setItem("contact_messages", JSON.stringify(messages));
+
+      // Try to send via webhook if available (e.g., Discord webhook, Formspree, etc)
+      try {
+        const webhookUrl = localStorage.getItem("email_webhook_url");
+        if (webhookUrl) {
+          await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              content: `📧 New Contact Message\n\n**From:** ${formData.name} (${formData.email})\n\n**Message:**\n${formData.message}`,
+            }),
+          }).catch(() => {});
+        }
+      } catch {}
+
+      return true;
+    } catch (err) {
+      setError("Failed to process message. Please try again.");
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', message: '' });
-    }, 3000);
+    setError("");
+
+    if (!formData.name || !formData.email || !formData.message) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    const success = await sendEmail();
+    if (success) {
+      setSubmitted(true);
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+    }
   };
 
   return (
@@ -27,19 +82,26 @@ export default function Contact() {
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage:
-              'url(https://images.pexels.com/photos/1288482/pexels-photo-1288482.jpeg?auto=compress&cs=tinysrgb&w=1200)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+              "url(https://images.pexels.com/photos/1288482/pexels-photo-1288482.jpeg?auto=compress&cs=tinysrgb&w=1200)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         ></div>
         <div className="relative max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl md:text-7xl font-serif font-bold tracking-tight mb-6">
             Contact Us
           </h1>
           <p className="text-xl text-gray-300 mb-8">
             Have questions about your journey? Our team is here to help 24/7.
           </p>
-          <Button size="lg" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+          <Button
+            size="lg"
+            onClick={() =>
+              document
+                .getElementById("contact-form")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
             <Send className="w-5 h-5 mr-2 inline" />
             Send a Message
           </Button>
@@ -60,8 +122,12 @@ export default function Contact() {
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">Address</h3>
-                    <p className="text-gray-600">Pimple Gurav, Pune, India</p>
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                      Address
+                    </h3>
+                    <p className="text-gray-600">
+                      Akurdi, Pune, Maharashtra, India
+                    </p>
                   </div>
                 </div>
 
@@ -70,8 +136,10 @@ export default function Contact() {
                     <Phone className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">Phone</h3>
-                    <p className="text-gray-600">738281827172</p>
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                      Phone
+                    </h3>
+                    <p className="text-gray-600">9096809820</p>
                   </div>
                 </div>
 
@@ -80,14 +148,18 @@ export default function Contact() {
                     <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">omkarjagtap368@gmail.com</p>
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                      Email
+                    </h3>
+                    <p className="text-gray-600">rohitkhobare2005@gmail.com</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg text-gray-900 mb-4">Follow Us</h3>
+                <h3 className="font-semibold text-lg text-gray-900 mb-4">
+                  Follow Us
+                </h3>
                 <div className="flex space-x-4">
                   <a
                     href="#"
@@ -119,15 +191,27 @@ export default function Contact() {
 
             <div id="contact-form">
               <div className="bg-white rounded-2xl shadow-xl p-8">
-                <h2 className="text-2xl font-bold mb-6 text-gray-900">Send us a Message</h2>
+                <h2 className="text-2xl font-bold mb-6 text-gray-900">
+                  Send us a Message
+                </h2>
                 {submitted ? (
                   <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center">
+                    <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
                     <p className="text-green-700 font-semibold text-lg">
-                      Thank you! We'll get back to you soon.
+                      Thank you for reaching out!
+                    </p>
+                    <p className="text-green-600 mt-2">
+                      Your message has been recorded. We'll respond to{" "}
+                      {formData.email} shortly.
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
+                        {error}
+                      </div>
+                    )}
                     <Input
                       label="Name"
                       type="text"
@@ -188,7 +272,7 @@ export default function Contact() {
 
           <div className="rounded-2xl overflow-hidden shadow-xl">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3781.1234567890!2d73.7234567!3d18.5678901!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDM0JzA0LjQiTiA3M8KwNDMnMjQuNCJF!5e0!3m2!1sen!2sin!4v1234567890"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.0238652!2d73.7745!3d18.569!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1sAkurdi%2C+Pune!2s1.0!5e0!3m2!1sen!2sin!4v1234567890"
               width="100%"
               height="450"
               style={{ border: 0 }}
@@ -203,8 +287,8 @@ export default function Contact() {
               size="lg"
               onClick={() =>
                 window.open(
-                  'https://www.google.com/maps/search/Pimple+Gurav+Pune',
-                  '_blank'
+                  "https://www.google.com/maps/search/Akurdi+Pune",
+                  "_blank",
                 )
               }
             >

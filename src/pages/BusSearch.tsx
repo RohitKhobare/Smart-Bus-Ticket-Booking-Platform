@@ -1,23 +1,29 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Search, Clock, Star, Wifi, Zap } from 'lucide-react';
-import { supabase, Bus, Route } from '../lib/supabase';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import SeatSelection from '../components/SeatSelection';
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { ArrowRight, Search, Clock, Star, Wifi, Zap } from "lucide-react";
+import { Bus } from "../lib/supabase";
+import { dataService } from "../lib/dataService";
+import Button from "../components/Button";
+import { useAuth } from "../contexts/AuthContext";
+import Input from "../components/Input";
+import SeatSelection from "../components/SeatSelection";
 
 export default function BusSearch() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [buses, setBuses] = useState<Bus[]>([]);
   const [filteredBuses, setFilteredBuses] = useState<Bus[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
 
-  const [origin, setOrigin] = useState(searchParams.get('origin') || '');
-  const [destination, setDestination] = useState(searchParams.get('destination') || '');
-  const [date, setDate] = useState(searchParams.get('date') || '');
+  const { user } = useAuth();
+  const [origin, setOrigin] = useState(searchParams.get("origin") || "");
+  const [destination, setDestination] = useState(
+    searchParams.get("destination") || "",
+  );
+  const [date, setDate] = useState(searchParams.get("date") || "");
 
   const [filters, setFilters] = useState({
     busTypes: [] as string[],
@@ -25,7 +31,7 @@ export default function BusSearch() {
     departureTimes: [] as string[],
   });
 
-  const [sortBy, setSortBy] = useState('price');
+  const [sortBy, setSortBy] = useState("price");
 
   useEffect(() => {
     if (origin && destination) {
@@ -33,42 +39,56 @@ export default function BusSearch() {
     }
   }, [origin, destination]);
 
+  // After user logs in, auto-select the bus if coming back from login
+  useEffect(() => {
+    if (user && location.state?.bus && buses.length > 0) {
+      const busToSelect = buses.find((b) => b.id === location.state.bus);
+      if (busToSelect) {
+        setSelectedBus(busToSelect);
+        // Clear the state to prevent re-selection on subsequent renders
+        navigate(location.pathname + location.search, { state: {} });
+      }
+    }
+  }, [user, buses, location.state?.bus]);
+
   useEffect(() => {
     applyFiltersAndSort();
   }, [buses, filters, sortBy]);
 
-  const fetchBuses = async () => {
+  const fetchBuses = () => {
     setLoading(true);
-    setError('');
+    setError("");
+
+    if (!origin || !destination) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data: routeData, error: routeError } = await supabase
-        .from('routes')
-        .select('id')
-        .eq('origin', origin)
-        .eq('destination', destination)
-        .maybeSingle();
+      const routes = dataService.getRoutes();
+      const route = routes.find(
+        (r) => r.origin === origin && r.destination === destination,
+      );
 
-      if (routeError) throw routeError;
-
-      if (!routeData) {
-        setError('No buses found for this route');
+      if (!route) {
+        setError("No buses found for this route. Please select a valid route.");
         setBuses([]);
         setFilteredBuses([]);
-        setLoading(false);
-        return;
+      } else {
+        const busesForRoute = dataService.getBusesByRoute(route.id);
+        if (busesForRoute.length === 0) {
+          setError("No buses available for this route currently.");
+          setBuses([]);
+          setFilteredBuses([]);
+        } else {
+          setBuses(busesForRoute);
+        }
       }
-
-      const { data: busData, error: busError } = await supabase
-        .from('buses')
-        .select('*')
-        .eq('route_id', routeData.id);
-
-      if (busError) throw busError;
-
-      setBuses(busData || []);
     } catch (err) {
-      setError('Failed to fetch buses');
-      console.error(err);
+      console.error("Error fetching buses:", err);
+      setError("Failed to load buses. Please try again.");
+      setBuses([]);
+      setFilteredBuses([]);
     } finally {
       setLoading(false);
     }
@@ -78,19 +98,21 @@ export default function BusSearch() {
     let filtered = [...buses];
 
     if (filters.busTypes.length > 0) {
-      filtered = filtered.filter((bus) => filters.busTypes.includes(bus.bus_type));
+      filtered = filtered.filter((bus) =>
+        filters.busTypes.includes(bus.bus_type),
+      );
     }
 
     filtered = filtered.filter((bus) => bus.price <= filters.maxPrice);
 
     if (filters.departureTimes.length > 0) {
       filtered = filtered.filter((bus) => {
-        const hour = parseInt(bus.departure_time.split(':')[0]);
+        const hour = parseInt(bus.departure_time.split(":")[0]);
         return filters.departureTimes.some((range) => {
-          if (range === 'before10') return hour < 10;
-          if (range === '10to17') return hour >= 10 && hour < 17;
-          if (range === '17to23') return hour >= 17 && hour < 23;
-          if (range === 'after23') return hour >= 23;
+          if (range === "before10") return hour < 10;
+          if (range === "10to17") return hour >= 10 && hour < 17;
+          if (range === "17to23") return hour >= 17 && hour < 23;
+          if (range === "after23") return hour >= 23;
           return false;
         });
       });
@@ -98,15 +120,15 @@ export default function BusSearch() {
 
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'price':
+        case "price":
           return a.price - b.price;
-        case 'seats':
+        case "seats":
           return b.seats_available - a.seats_available;
-        case 'rating':
+        case "rating":
           return b.rating - a.rating;
-        case 'departure':
+        case "departure":
           return a.departure_time.localeCompare(b.departure_time);
-        case 'arrival':
+        case "arrival":
           return a.arrival_time.localeCompare(b.arrival_time);
         default:
           return 0;
@@ -117,11 +139,13 @@ export default function BusSearch() {
   };
 
   const handleSearch = () => {
-    navigate(`/s-to-d?origin=${origin}&destination=${destination}&date=${date}`);
+    navigate(
+      `/s-to-d?origin=${origin}&destination=${destination}&date=${date}`,
+    );
     fetchBuses();
   };
 
-  const toggleFilter = (type: 'busTypes' | 'departureTimes', value: string) => {
+  const toggleFilter = (type: "busTypes" | "departureTimes", value: string) => {
     setFilters((prev) => ({
       ...prev,
       [type]: prev[type].includes(value)
@@ -133,11 +157,11 @@ export default function BusSearch() {
   const setTomorrow = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    setDate(tomorrow.toISOString().split('T')[0]);
+    setDate(tomorrow.toISOString().split("T")[0]);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -185,17 +209,20 @@ export default function BusSearch() {
                 <h4 className="font-semibold mb-3">Bus Type</h4>
                 <div className="space-y-2">
                   {[
-                    'Non AC Seater',
-                    'AC Seater',
-                    'AC Sleeper',
-                    'Non AC Sleeper',
-                    'Electric Luxury',
+                    "Non AC Seater",
+                    "AC Seater",
+                    "AC Sleeper",
+                    "Non AC Sleeper",
+                    "Electric Luxury",
                   ].map((type) => (
-                    <label key={type} className="flex items-center cursor-pointer">
+                    <label
+                      key={type}
+                      className="flex items-center cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={filters.busTypes.includes(type)}
-                        onChange={() => toggleFilter('busTypes', type)}
+                        onChange={() => toggleFilter("busTypes", type)}
                         className="w-4 h-4 text-[#FF6B00] rounded focus:ring-[#FF6B00]"
                       />
                       <span className="ml-2 text-sm">{type}</span>
@@ -213,7 +240,10 @@ export default function BusSearch() {
                   step="50"
                   value={filters.maxPrice}
                   onChange={(e) =>
-                    setFilters({ ...filters, maxPrice: parseInt(e.target.value) })
+                    setFilters({
+                      ...filters,
+                      maxPrice: parseInt(e.target.value),
+                    })
                   }
                   className="w-full"
                 />
@@ -230,16 +260,21 @@ export default function BusSearch() {
                 <h4 className="font-semibold mb-3">Departure Time</h4>
                 <div className="space-y-2">
                   {[
-                    { label: 'Before 10 AM', value: 'before10' },
-                    { label: '10 AM - 5 PM', value: '10to17' },
-                    { label: '5 PM - 11 PM', value: '17to23' },
-                    { label: 'After 11 PM', value: 'after23' },
+                    { label: "Before 10 AM", value: "before10" },
+                    { label: "10 AM - 5 PM", value: "10to17" },
+                    { label: "5 PM - 11 PM", value: "17to23" },
+                    { label: "After 11 PM", value: "after23" },
                   ].map((time) => (
-                    <label key={time.value} className="flex items-center cursor-pointer">
+                    <label
+                      key={time.value}
+                      className="flex items-center cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={filters.departureTimes.includes(time.value)}
-                        onChange={() => toggleFilter('departureTimes', time.value)}
+                        onChange={() =>
+                          toggleFilter("departureTimes", time.value)
+                        }
                         className="w-4 h-4 text-[#FF6B00] rounded focus:ring-[#FF6B00]"
                       />
                       <span className="ml-2 text-sm">{time.label}</span>
@@ -304,7 +339,9 @@ export default function BusSearch() {
                             <h3 className="text-xl font-bold text-gray-900">
                               {bus.bus_name}
                             </h3>
-                            <p className="text-sm text-gray-600">{bus.bus_type}</p>
+                            <p className="text-sm text-gray-600">
+                              {bus.bus_type}
+                            </p>
                           </div>
                           <div className="flex items-center gap-1 bg-green-100 px-3 py-1 rounded-full">
                             <Star className="w-4 h-4 text-green-600 fill-green-600" />
@@ -319,7 +356,9 @@ export default function BusSearch() {
                             <div className="text-2xl font-bold text-gray-900">
                               {bus.departure_time}
                             </div>
-                            <div className="text-sm text-gray-600">{origin}</div>
+                            <div className="text-sm text-gray-600">
+                              {origin}
+                            </div>
                           </div>
                           <div className="flex-1 flex items-center">
                             <div className="flex-1 border-t-2 border-dashed border-gray-300"></div>
@@ -330,7 +369,9 @@ export default function BusSearch() {
                             <div className="text-2xl font-bold text-gray-900">
                               {bus.arrival_time}
                             </div>
-                            <div className="text-sm text-gray-600">{destination}</div>
+                            <div className="text-sm text-gray-600">
+                              {destination}
+                            </div>
                           </div>
                         </div>
 
@@ -340,8 +381,12 @@ export default function BusSearch() {
                               key={idx}
                               className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-700"
                             >
-                              {amenity.includes('WiFi') && <Wifi className="w-3 h-3" />}
-                              {amenity.includes('Electric') && <Zap className="w-3 h-3" />}
+                              {amenity.includes("WiFi") && (
+                                <Wifi className="w-3 h-3" />
+                              )}
+                              {amenity.includes("Electric") && (
+                                <Zap className="w-3 h-3" />
+                              )}
                               {amenity}
                             </span>
                           ))}
@@ -359,7 +404,18 @@ export default function BusSearch() {
                         </div>
                         <Button
                           className="w-full lg:w-auto"
-                          onClick={() => setSelectedBus(bus)}
+                          onClick={() => {
+                            if (!user) {
+                              navigate("/login", {
+                                state: {
+                                  from: location.pathname + location.search,
+                                  bus: bus.id,
+                                },
+                              });
+                            } else {
+                              setSelectedBus(bus);
+                            }
+                          }}
                         >
                           Select Seats
                           <ArrowRight className="w-4 h-4 ml-2 inline" />

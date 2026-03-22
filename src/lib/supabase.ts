@@ -1,13 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  // log a clear warning and create a dummy client so the application
+  // does not crash immediately on import. Components can check for
+  // `supabase` being null if desired.
+  console.error(
+    "Supabase environment variables are not set. Please copy .env.example to .env and add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
+  );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// helpful flag for other modules to know whether real auth is available
+export const SUPABASE_CONFIGURED = Boolean(supabaseUrl && supabaseAnonKey);
+
+export const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : // create a no-op stub client to avoid null checks everywhere
+      ({ auth: undefined } as any); // leave auth undefined so guards can detect missing configuration
 
 export interface Route {
   id: string;

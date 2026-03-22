@@ -1,38 +1,40 @@
-import { Shield, Clock, Users, Award } from 'lucide-react';
+import { Shield, Clock, Users, Award } from "lucide-react";
 
 export default function About() {
   const features = [
     {
       icon: Shield,
-      title: 'Safe & Secure',
-      description: 'Your safety is our top priority with verified operators and secure payments',
+      title: "Luxurious Fleet",
+      description: "Travel in style aboard our premium, fully-equipped buses",
     },
     {
       icon: Clock,
-      title: '24/7 Support',
-      description: 'Round-the-clock customer support to assist you with any queries',
+      title: "24/7 Concierge Support",
+      description: "Personalized assistance anytime during your journey",
     },
     {
       icon: Users,
-      title: 'Trusted by Millions',
-      description: 'Join millions of satisfied customers who choose us for their journey',
+      title: "Exclusive Membership",
+      description:
+        "Join our elite travelers club for perks and priority service",
     },
     {
       icon: Award,
-      title: 'Best Price Guarantee',
-      description: 'Get the best deals and offers on bus tickets across India',
+      title: "Premium Comfort Promise",
+      description: "We guarantee a relaxing and comfortable ride every time",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50 pt-16">
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight mb-6">
             About <span className="text-[#FF6B00]">Raj Mudra Travels</span>
           </h1>
           <p className="text-xl text-gray-300">
-            Your trusted partner for comfortable and affordable bus journeys across India
+            Your trusted partner for comfortable and affordable bus journeys
+            across India
           </p>
         </div>
       </section>
@@ -65,13 +67,20 @@ export default function About() {
           </h2>
           <div className="prose prose-lg max-w-none text-gray-600">
             <p className="mb-4">
-              Raj Mudra Travels has been connecting people and places across India for years. We started with a simple mission: to make bus travel comfortable, affordable, and accessible to everyone.
+              Raj Mudra Travels has been connecting people and places across
+              India for years. We started with a simple mission: to make bus
+              travel comfortable, affordable, and accessible to everyone.
             </p>
             <p className="mb-4">
-              Today, we partner with hundreds of trusted bus operators to offer you the widest selection of routes, timings, and bus types. Whether you're traveling for business or leisure, we ensure your journey is smooth and enjoyable.
+              Today, we partner with hundreds of trusted bus operators to offer
+              you the widest selection of routes, timings, and bus types.
+              Whether you're traveling for business or leisure, we ensure your
+              journey is smooth and enjoyable.
             </p>
             <p>
-              Our commitment to quality service, customer satisfaction, and innovation has made us one of the most trusted names in bus booking services across the country.
+              Our commitment to quality service, customer satisfaction, and
+              innovation has made us one of the most trusted names in bus
+              booking services across the country.
             </p>
           </div>
         </div>

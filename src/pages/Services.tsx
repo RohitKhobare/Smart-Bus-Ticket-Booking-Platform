@@ -1,44 +1,57 @@
-import { Bus, Ticket, CreditCard, HeadphonesIcon, MapPin, Shield } from 'lucide-react';
+import {
+  Bus,
+  Ticket,
+  CreditCard,
+  HeadphonesIcon,
+  MapPin,
+  Shield,
+} from "lucide-react";
 
 export default function Services() {
   const services = [
     {
       icon: Bus,
-      title: 'Wide Range of Buses',
-      description: 'Choose from AC/Non-AC, Seater, Sleeper, and Luxury buses to suit your comfort and budget',
+      title: "Luxury Fleet",
+      description:
+        "Experience premium buses with reclining seats, entertainment, and refreshments",
     },
     {
       icon: Ticket,
-      title: 'Easy Booking',
-      description: 'Book your tickets in just a few clicks with our simple and intuitive booking process',
+      title: "Seamless Booking",
+      description:
+        "Reserve your seat in seconds with our elegant, user-friendly system",
     },
     {
       icon: CreditCard,
-      title: 'Secure Payments',
-      description: 'Multiple payment options with bank-grade security for safe transactions',
+      title: "Secure Payments",
+      description:
+        "Encrypted transactions with multiple payment methods for your peace of mind",
     },
     {
       icon: HeadphonesIcon,
-      title: '24/7 Customer Support',
-      description: 'Our dedicated support team is always available to help you with any queries',
+      title: "24/7 Concierge Support",
+      description:
+        "Dedicated support to make your journey effortless and enjoyable",
     },
     {
       icon: MapPin,
-      title: 'Multiple Routes',
-      description: 'Extensive network covering major cities and towns across India',
+      title: "Pan-India Coverage",
+      description:
+        "Routes connecting every major city and tourist destination across India",
     },
     {
       icon: Shield,
-      title: 'Trusted Partners',
-      description: 'We work only with verified and reliable bus operators for your safety',
+      title: "Verified Operators",
+      description:
+        "Only top-tier partners are selected to ensure reliability and comfort",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50 pt-16">
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight mb-6">
             Our <span className="text-[#FF6B00]">Services</span>
           </h1>
           <p className="text-xl text-gray-300">
@@ -74,7 +87,9 @@ export default function Services() {
             Why Choose <span className="text-[#FF6B00]">Us?</span>
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            We are committed to providing the best bus booking experience with transparent pricing, reliable service, and customer satisfaction at the heart of everything we do.
+            We are committed to providing the best bus booking experience with
+            transparent pricing, reliable service, and customer satisfaction at
+            the heart of everything we do.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div className="bg-gray-50 rounded-xl p-6">
