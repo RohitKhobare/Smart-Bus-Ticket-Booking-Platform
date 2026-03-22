@@ -1,153 +1,133 @@
-# Smart Bus Booking Platform
+# 🚌 Smart Bus Ticket Booking Platform
 
-A modern bus reservation app built with **React**, **Vite**, and **TypeScript**, featuring a secure payment workflow via Razorpay and optional Supabase integration.
+A modern and scalable **bus ticket booking web application** that enables users to search routes, view available buses, manage seat selection, and book tickets seamlessly in real time.
 
-## 🚀 Project Overview
+---
 
-Users can browse routes, select buses and seats, provide passenger details, and pay using Razorpay's sandbox. After a successful booking the app redirects the customer to a live tracking page for that bus; a manual "Track Your Bus" button is also offered on the confirmation screen. Bookings are stored locally (and via Supabase if configured). An Express backend handles order creation securely using your Razorpay secret key.
+## 🚀 Features
 
-## 👤 Author
+* 🔍 Search buses between source and destination
+* 🚌 View available buses with timing and pricing
+* 💺 Seat selection and booking system
+* 📅 Travel date filtering
+* 🔄 Real-time availability updates
+* 📱 Responsive UI for all devices
+* ⚡ Fast and optimized performance
 
-**Your Name**
+---
 
-Email: your.email@example.com
+## 🛠️ Tech Stack
 
-## ⚙️ Prerequisites
+**Frontend:**
 
-- Node.js 16+ / npm
-- A Razorpay test account (key ID + secret)
-- (Optional) Supabase project for persistent storage
-- (Optional) no extra cloud services; real‑time tracking is simulated
-- `VITE_API_URL` may be set to override the backend/socket URL (defaults to same origin or localhost:4000)
+* React.js
+* Vite
+* Tailwind CSS
 
-## 🛠️ Setup Instructions
+**Libraries & Tools:**
 
-1. **Clone repository**
+* React Router
+* Zustand (state management)
+* Chart.js (analytics/visualization)
+* Framer Motion (animations)
 
-   ```bash
-   git clone <your-repo-url>
-   cd Smart-Bus-Booking-Platform
-   ```
+---
 
-2. **Install dependencies**
+## 📂 Project Structure
 
-   ```bash
-   npm install          # frontend (includes new libs: socket.io-client, leaflet, react-leaflet)
-   # you may want to add dev types for leaflet:
-   #   npm install -D @types/leaflet
-   cd server
-   npm install          # backend
-   cd ..
-   ```
+```
+Smart-Bus-Ticket-Booking-Platform/
+│── public/
+│── src/
+│   ├── components/
+│   ├── pages/
+│   ├── assets/
+│   ├── hooks/
+│   └── App.jsx
+│── package.json
+│── vite.config.js
 
-3. **Configure environment variables**
-   - **Frontend** (optional): create `.env` in root:
-
-     ```env
-     VITE_RAZORPAY_KEY_ID=rzp_test_SM1XYnIs87t6S3
-     # (optional Supabase)
-     VITE_SUPABASE_URL=your_url
-     VITE_SUPABASE_ANON_KEY=your_anon_key
-     ```
-
-   - **Backend**: copy example and fill in your Razorpay test credentials:
-     ```bash
-     cd server
-     cp .env.example .env
-     # edit .env with the provided values
-     ```
-     ```env
-     RAZORPAY_KEY_ID=rzp_test_SM1XYnIs87t6S3
-     RAZORPAY_KEY_SECRET=bcAVS5Olmuqucgfcn1zVJvMc
-     PORT=4000
-     ```
-
-4. **Start the backend server**
-
-   ```bash
-   cd server
-   node index.js
-   ```
-
-   > If you want the frontend to call this local server instead of the
-   > serverless function set `VITE_API_URL` in the root `.env` file (see
-   > previous step). E.g.:
-   >
-   > ```bash
-   > echo "VITE_API_URL=http://localhost:4000" >> ../.env
-   > ```
-
-   Visit `http://localhost:4000/health` to confirm (`{"ok":true}`).
-
-5. **Start the frontend**
-
-   ```bash
-   cd ..
-   npm run dev
-   ```
-
-   Open the URL printed by Vite (e.g. `http://localhost:5185`).
-
-6. **Test booking & payment**
-   - Select a bus, choose seats, fill passenger info.
-   - Click **Pay ₹... & Confirm Booking**.
-   - Use Razorpay test card: `4111 1111 1111 1111` (expiry any future, CVV any 3 digits).
-   - After payment succeeds, you'll see a confirmation screen with booking details and a **Track Your Bus** button.
-   - Click the button (or visit `/track?bus={busId}` manually) to see the live location of your bus on the map.
-   - The bus position updates every ~3 seconds as it moves along its simulated route.
-
-## 📦 Build & Preview
-
-```bash
-npm run build       # compile for production
-npm run preview     # serve the dist locally
 ```
 
-## 🚀 Deployment
+## ⚙️ Installation & Setup
 
-You can deploy the entire project on Vercel (frontend + serverless backend) or split the frontend and backend.
+### 1. Clone the repository
 
-### Vercel (recommended)
+```bash
+git clone https://github.com/RohitKhobare/Smart-Bus-Ticket-Booking-Platform.git
 
-1. Push your repository to GitHub.
-2. Go to https://vercel.com and import the repo.
-3. During setup, add the following Environment Variables under "Project Settings" \> "Environment Variables":
-   - `RAZORPAY_KEY_ID` (test key or live key)
-   - `RAZORPAY_KEY_SECRET`
-   - optionally `VITE_RAZORPAY_KEY_ID` (for client-usage) and any Supabase vars.
-4. Vercel will automatically detect the React project and build it.
-5. The `/api/create-order` serverless function is included in the `api/` folder and will be deployed automatically; it uses the same Razorpay credentials.
-6. After deployment, the site URL (e.g. `https://your-app.vercel.app`) will serve the frontend, and the serverless endpoint will be available at `https://your-app.vercel.app/api/create-order`.
+```
 
-The frontend already uses a relative path to the API, so no additional configuration is required.
+### 2. Navigate to project folder
 
-### Other hosting options
+```bash
+cd Smart-Bus-Ticket-Booking-Platform
 
-- **Frontend**: build with `npm run build` and host output on Netlify, GitHub Pages, S3, etc.
-- **Backend**: run the Express server (`server/index.js`) on Heroku, Render, AWS, etc. Set env vars accordingly.
+```
 
-Configure the frontend to point to the backend location in `createPaymentOrder` if you host separately.
+### 3. Install dependencies
 
-## 📚 Additional Notes
+```bash
+npm install
 
-### Real-Time Bus Tracking System
+```
 
-The app now features an integrated GPS tracking system:
+### 4. Run development server
 
-1. **Booking Confirmation** – After successful payment, customers see a confirmation dialog with booking details.
-2. **Automatic Redirect** – The UI automatically redirects to `/track?bus={busId}` after 3 seconds.
-3. **Manual Navigation** – Customers can also click "Track Your Bus" on the confirmation screen.
-4. **Live Map** – The tracking page displays an interactive Leaflet map centered on the selected bus.
-5. **Real-Time Updates** – Bus position updates arrive every ~3 seconds via socket.io.
-6. **All Buses on Home** – The homepage shows routes and booking options; no map is displayed before booking.
+```bash
+npm run dev
 
-**How It Works:**
+```
 
-- The backend (`server/index.js`) simulates bus routes between two cities and broadcasts their positions over socket.io.
-- The frontend loads `BusMap` component which accepts an optional `busId` prop.
-- When `busId` is provided (as in `/track?bus=bus1`), only that bus is shown and the map center follows it.
-- Without a `busId` (homepage and search page), all buses are displayed.
+---
 
-## ✅ License
+## 🌐 Live Demo
 
-MIT License
+👉 (Add your deployed link here after deployment)
+
+Example:
+
+```
+https://RohitKhobare.github.io/Smart-Bus-Ticket-Booking-Platform/
+
+```
+
+## 🔮 Future Enhancements
+
+* 🔐 User authentication (Login/Signup)
+* 💳 Online payment integration
+* 📍 Live bus tracking
+* 📊 Admin dashboard
+* 📩 Booking notifications
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a new branch
+3. Make your changes
+4. Submit a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 👨‍💻 Author
+
+Name: Rohit Manesh Khobare
+email: rohitkhobare2005@gmail.com
+contact: 9096809820
+**Rohit Khobare**
+
+* GitHub: https://github.com/RohitKhobare
+
+---
+
+⭐ If you like this project, don’t forget to give it a star!
